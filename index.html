@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Controle de Ponto - Regina</title>
+<style>
+body{font-family:Arial;background:#f5efe6;margin:0;padding:20px;color:#2b2b2b;}
+h1{text-align:center;font-weight:bold;}
+.btn{width:100%;padding:14px;margin:10px 0;border:none;border-radius:8px;
+font-size:18px;font-weight:bold;cursor:pointer;background:#3a2e2a;color:white;}
+#registros{margin-top:25px;padding:15px;background:white;border-radius:8px;}
+.log{padding:10px;border-bottom:1px solid #ddd;}
+</style>
+</head>
+<body>
+<h1>Controle de Jornada</h1>
+<button class="btn" onclick="registrar('Entrada')">Registrar Entrada</button>
+<button class="btn" onclick="registrar('Intervalo')">Registrar Intervalo</button>
+<button class="btn" onclick="registrar('Retorno')">Registrar Retorno</button>
+<button class="btn" onclick="registrar('Saída')">Registrar Saída</button>
+<button class="btn" onclick="baixarExcel()" style="background:#000">Baixar Relatório Excel</button>
+<div id="registros"></div>
+<script>
+function registrar(tipo){
+ const d=new Date();
+ const registro={tipo,data:d.toLocaleDateString(),hora:d.toLocaleTimeString()};
+ let r=JSON.parse(localStorage.getItem("ponto"))||[];
+ r.push(registro);
+ localStorage.setItem("ponto",JSON.stringify(r));
+ mostrar();
+}
+function mostrar(){
+ const c=document.getElementById("registros");
+ const r=JSON.parse(localStorage.getItem("ponto"))||[];
+ c.innerHTML="<h3>Registros</h3>";
+ r.forEach(s=>{c.innerHTML+=`<div class='log'><strong>${s.tipo}</strong> – ${s.data} às ${s.hora}</div>`});
+}
+function baixarExcel(){
+ const r=JSON.parse(localStorage.getItem("ponto"))||[];
+ let csv="Tipo,Data,Hora
+";
+ r.forEach(s=>{csv+=`${s.tipo},${s.data},${s.hora}
+`});
+ const blob=new Blob([csv],{type:"text/csv"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="relatorio_ponto.csv";
+ a.click();
+}
+mostrar();
+</script>
+</body>
+</html>
